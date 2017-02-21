@@ -14,11 +14,11 @@ sub print_pjsip_extension {
   # Print Endpoint config
   print $fh "[$extension]($endpoint_template)\n";
   print $fh "type=endpoint\n";
-  print $fh "auth=auth_$extension\n";
+  print $fh "auth=auth$extension\n";
   print $fh "aors=$extension\n";
   print $fh $callerid_line;
   # Print Auth config
-  print $fh "[auth_$extension](auth-userpass)\n";
+  print $fh "[auth$extension](auth-userpass)\n";
   print $fh "username=$extension\n";
   print $fh "password=$password\n";
   # Print Aors config
