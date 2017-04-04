@@ -86,7 +86,7 @@ my $secret;
 my $callerid_line;
 
 while (<$sip_file>) {
-  if (/^\[(\d+)\]\(\w+_phone\)$/ or eof()) {
+  if (/^\[(\d+)\]\(\w+_phone\)$/ or eof($sip_file)) {
     if ($secret) {
       print_pjsip_extension($pjsip_file, $extension, $secret, $callerid_line, $endpoint_template_name);
       $secret = '';
