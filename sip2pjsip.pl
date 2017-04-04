@@ -86,19 +86,24 @@ my $secret;
 my $callerid_line;
 
 while (<$sip_file>) {
-  if (/^\[(\d+)\]\(\w+_phone\)$/) {
+  if (/^\[(\d+)\]\(\w+_phone\)$/ or eof()) {
+    if ($secret) {
+      print_pjsip_extension($pjsip_file, $extension, $secret, $callerid_line, $endpoint_template_name);
+      $secret = '';
+      $callerid_line = '';
+    }
     $extension = $1;
   } elsif (/^secret=(\w+)$/) {
     $secret = $1;
   } elsif (/^callerid=/) {
     $callerid_line = $_;
-  } elsif (/^$/ and $extension) {
+  } 
+  if ($extension && $secret) {
     print "$extension $secret\n";
     print $callerid_line;
-    print_pjsip_extension($pjsip_file, $extension, $secret, $callerid_line, $endpoint_template_name);
   }
-
 }
+
 
 
 close($sip_file);
