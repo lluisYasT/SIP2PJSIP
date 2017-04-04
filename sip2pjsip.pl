@@ -28,7 +28,7 @@ sub read_lines_from_db {
   $sth->execute();
   open (my $pjsip_file, '>', 'pjsip_from_db.conf') or die "Could not open file";
   while( my @row = $sth->fetchrow_array()) {
-    print_pjsip_extension($pjsip_file, $row[0], $row[1], "callerid=$row[2]\n", $row[3] . '_phone');
+    print_pjsip_extension($pjsip_file, $row[0], $row[1], "callerid=" . $row[2] . "\n", $row[3] . '_phone');
   }
 }
   
