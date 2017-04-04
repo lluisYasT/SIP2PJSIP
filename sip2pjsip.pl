@@ -3,6 +3,35 @@ use strict;
 use warnings;
 use v5.010;
 use autodie;
+use DBI;
+
+my %db = (
+  user => 'root',
+  pass => '',
+  db   => 'asterisk',
+);
+my $dsn = "DBI:mysql:database=$db{db};host=localhost";
+my $dbh = DBI->connect($dsn, $db{user}, $db{pass}, {RaiseError => 1, AutoCommit => 0 });
+
+sub insert_in_db {
+  my $table = shift;
+  my @values = @_;
+
+  my $query = "INSERT INTO $table VALUES(" . join(',', @values) .");";
+  print $query;
+}
+
+sub read_lines_from_db {
+  my $query = "SELECT extension,secret,callerid,context FROM devices WHERE context NOT LIKE 'mor%' and extension REGEXP '^[0-9][0-9]+'";
+
+  my $sth = $dbh->prepare($query);
+  $sth->execute();
+  open (my $pjsip_file, '>', 'pjsip_from_db.conf') or die "Could not open file";
+  while( my @row = $sth->fetchrow_array()) {
+    print_pjsip_extension($pjsip_file, $row[0], $row[1], $row[2], $row[3] . '_phone');
+  }
+}
+  
 
 sub print_pjsip_extension {
   my $fh = shift;
@@ -28,6 +57,10 @@ sub print_pjsip_extension {
 
 }
 
+if ($ARGV[0] =~ /^db$/i) {
+  read_lines_from_db();
+  exit(0);
+}
 
 $ARGV[0] =~ /sip_(\w+).conf$/;
 my $reseller = $1 or die "Could not extract reseller from filename";
